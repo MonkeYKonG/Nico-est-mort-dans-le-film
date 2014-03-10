@@ -13,7 +13,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace Projet_epita
 {
-    class Character:Sprite
+    class Character : Sprite
     {
         /* Respecte les régions donnés
          * ce n'est pas grâve si elle reste vide
@@ -21,11 +21,11 @@ namespace Projet_epita
          * de la region *Rollement de tambour*
          * "Methodes" et oui! Bonne chane
          */
-        
+
 
         #region Attributs
 
-        int Nb_rect;
+        int _frameCount;
 
         #endregion Attributs
 
@@ -33,14 +33,17 @@ namespace Projet_epita
 
         public override void Initialize()
         {
-            MaxSpeed = 1;
+            MaxSpeed = 0.1f;
             base.Initialize();
-            SubRects.Add(new Rectangle(8,2,11,30));
-            SubRects.Add(new Rectangle(44, 2, 10, 30));
-            SubRects.Add(new Rectangle(81,2,6,30));
-            SubRects.Add(new Rectangle(101,1,11,29));
-            SubRects.Add(new Rectangle(137,1,10,29));
-            SubRects.Add(new Rectangle(74, 1, 6, 29));
+
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 8; j++)
+                {
+                    SubRects.Add(new Rectangle(j * 64, i * 64, 64, 64));
+                }
+            }
+            _frameCount = 0;
         }
 
         #endregion
@@ -94,17 +97,60 @@ namespace Projet_epita
 
         public override void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            // FIXME: Comme tu as du le remarquer, le personnage
-            // est afficher de manère ... tu m'as compris.
-            // appel la fonction ci-dessous avec les bon argument
-            // Pour quel n'affiche qu'un rectangle de l'image
-            // Place ce rectangle dans _tabAnnim pour gerer les
-            // annimation des perso
-            // utilise la constance Zoom de la classe Constantes
-            // Ne t'en fait pas si l'image n'est pas a la bonne taille
-            // pour le terrain on la changera plus tard
 
-            spriteBatch.Draw(Texture, Position, SubRects[1], Color.White, 0, new Vector2(1,1),5 , new SpriteEffects(), 0);
+            spriteBatch.Draw(Textures._textureCharacter, Position, SubRects[_anim], Color.White, 0, new Vector2(1, 1), 1, new SpriteEffects(), 0);
+
             //Supprime cette ligne quant tu auras fini l'autre
-                
+
         }
+        public void Update(GameTime gameTime)
+        {
+            double x = Position.X - InputsManager.X;
+            double y = Position.Y - InputsManager.Y;
+            double tangente = Math.Atan(x / y);
+            Console.WriteLine(tangente);
+            _frameCount = (_frameCount + 1) % 5;
+            if (_frameCount == 0)
+            {
+                if (InputsManager.IsPressed(Keys.W) || InputsManager.IsPressed(Keys.Up) || InputsManager.IsPressed(Keys.S) || InputsManager.IsPressed(Keys.Down) || InputsManager.IsPressed(Keys.A) || InputsManager.IsPressed(Keys.Left) || InputsManager.IsPressed(Keys.D) || InputsManager.IsPressed(Keys.Right))
+                {
+                    if ((_anim + 1) % 8 == 0)
+                    {
+                        _anim = 1;
+                    }
+                    else
+                    {
+                        _anim = (_anim + 1) % 8;
+                    }
+                    if (InputsManager.IsPressed(Keys.W) || InputsManager.IsPressed(Keys.Up))
+                    {
+                        _anim = _anim;
+                    }
+                    else if (InputsManager.IsPressed(Keys.S) || InputsManager.IsPressed(Keys.Down))
+                    {
+                        _anim = _anim + 16;
+                    }
+                    else if (InputsManager.IsPressed(Keys.A) || InputsManager.IsPressed(Keys.Left))
+                    {
+                        _anim = _anim + 8;
+                    }
+                    else if (InputsManager.IsPressed(Keys.D) || InputsManager.IsPressed(Keys.Right))
+                    {
+                        _anim = _anim + 24;
+                    }
+                }
+                else 
+                { 
+                
+                
+                }
+            }
+
+        }
+
+
+        #endregion Methodes
+    }
+}
+// float tangente = atan(largeur / hauteur);
+// m_sprite.setRotation(-(tangente * 360) / (2 * M_PI) + 90);
